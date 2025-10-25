@@ -1,10 +1,10 @@
 # Node modules
 node_modules/
 
-# Client build/dist folders
-client/node_modules/
-client/dist/
-client/build/
+# frontend build/dist folders
+frontend/node_modules/
+frontend/dist/
+frontend/build/
 
 # Server build/dist folders
 server/node_modules/
