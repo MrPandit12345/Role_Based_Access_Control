@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-
-const API_URL ="http://localhost:5000";
+import api from "../api/axios";
 
 export default function RequireAuth({ children }) {
-  const [status, setStatus] = useState("checking"); // checking | ok | unauth
+  const [status, setStatus] = useState("checking"); 
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -13,20 +12,13 @@ export default function RequireAuth({ children }) {
       return;
     }
 
-    // Verify token with backend /api/auth/me
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API_URL}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/auth/me");
         if (cancelled) return;
-        if (res.ok) {
-          setStatus("ok");
-        } else {
-          // token invalid or expired
-          setStatus("unauth");
-        }
+        if (res.status === 200) setStatus("ok");
+        else setStatus("unauth");
       } catch (err) {
         if (cancelled) return;
         setStatus("unauth");
@@ -38,7 +30,7 @@ export default function RequireAuth({ children }) {
     };
   }, []);
 
-  if (status === "checking") return null; // or a loading spinner
+  if (status === "checking") return null; 
   if (status === "unauth") return <Navigate to="/" replace />;
   return children;
 }

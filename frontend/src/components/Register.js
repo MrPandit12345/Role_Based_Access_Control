@@ -1,22 +1,19 @@
 import React, { useState } from "react";
-
-const API_URL = "http://localhost:5000";
+import api from "../api/axios";
 
 async function registerUser({ name, email, password, roleName }) {
   try {
-    const res = await fetch(`${API_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, roleName }),
+    const r = await api.post("/auth/register", {
+      name,
+      email,
+      password,
+      roleName,
     });
-
-    const data = await res.json();
-    if (!res.ok) {
-      return { message: data.message || data.error || "Registration failed" };
-    }
-    return data;
+    return r.data;
   } catch (err) {
-    return { message: err.message || "Network error" };
+    return {
+      message: err.response?.data?.message || "Network error",
+    };
   }
 }
 
@@ -40,12 +37,10 @@ export default function Register() {
     const res = await registerUser(form);
     setLoading(false);
 
-    // Server returns a success message and the created user; it does not return a token.
     if (res && res.user) {
       setMessage(
         res.message || "User created successfully. Redirecting to login..."
       );
-      // Redirect to login after a short delay
       setTimeout(() => (window.location.href = "/"), 1500);
       return;
     }

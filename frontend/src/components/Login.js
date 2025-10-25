@@ -1,24 +1,5 @@
 import React, { useState } from "react";
-
-const API_URL = "http://localhost:5000";
-
-async function loginUser({ email, password }) {
-  try {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      return { message: data.message || data.error || "Login failed" };
-    }
-    return data;
-  } catch (err) {
-    return { message: err.message || "Network error" };
-  }
-}
+import api from "../api/axios";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -32,7 +13,15 @@ export default function Login() {
     e.preventDefault();
     setMessage("");
     setLoading(true);
-    const res = await loginUser(form);
+    let res;
+    try {
+      const r = await api.post("/auth/login", form);
+      res = r.data;
+    } catch (err) {
+      res = {
+        message: err.response?.data?.message || "Network error",
+      };
+    }
     setLoading(false);
     if (res && res.token) {
       localStorage.setItem("token", res.token);
@@ -67,6 +56,11 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+      <div className="text-center mt-3 border border-solid p-2 bg-danger mt-3">
+        <a href="/register" className="text-white text-decoration-none">
+          <span className="font-weight-bold">Don't have an account?</span> Register
+        </a>
+      </div>
     </div>
   );
 }
