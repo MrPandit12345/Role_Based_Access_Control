@@ -5,7 +5,11 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const Role = require("../models/Role");
-const { secret, tokenExpiresIn } = require("../middleware/auth");
+const {
+  secret,
+  tokenExpiresIn,
+  authenticateJWT,
+} = require("../middleware/auth");
 
 router.post("/register", async (req, res) => {
   try {
@@ -89,6 +93,15 @@ router.post("/login", async (req, res) => {
         },
       },
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/me", authenticateJWT, async (req, res) => {
+  try {
+    res.json({ user: req.user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
