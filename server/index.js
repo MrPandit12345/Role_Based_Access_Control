@@ -6,6 +6,9 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const roleRoutes = require("./routes/role");
 const userRoutes = require("./routes/user");
+const enterpriseRoutes = require("./routes/enterprise");
+const employeeRoutes = require("./routes/employee");
+const productRoutes = require("./routes/product");
 
 const app = express();
 app.use(
@@ -22,6 +25,9 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/enterprises", enterpriseRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => res.send("RBAC Working"));
 
